@@ -14,17 +14,22 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => Products()),
+        ChangeNotifierProvider(create: (context) => Auth()),
+        ChangeNotifierProxyProvider<Auth, Products>(
+            create: (context) => Products(null, []),
+            update: (context, auth, prevProducts) =>
+                Products(auth.token, prevProducts!.items)),
         ChangeNotifierProvider(create: (context) => Cart()),
         ChangeNotifierProvider(create: (context) => Orders()),
-        ChangeNotifierProvider(create: (context) => Auth()),
       ],
-      child: MaterialApp(
-        home: AuthScreen(),
-        theme: ThemeData(
-          accentColor: Colors.deepOrange,
-          primaryColor: Colors.purple,
-          fontFamily: 'Lato',
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          home: auth.isAuth ? ProductsOverViewScreen() : AuthScreen(),
+          theme: ThemeData(
+            accentColor: Colors.deepOrange,
+            primaryColor: Colors.purple,
+            fontFamily: 'Lato',
+          ),
         ),
       ),
     );

@@ -39,18 +39,20 @@ class Products with ChangeNotifier {
   //         'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
   //   ),
   // ];
+  final String? _authToken;
   List<Product> _items = [];
+  Products(this._authToken, this._items);
   List<Product> get items {
     return [..._items];
   }
 
   List<Product> get favitems {
-    return _items.where((element) => element.isFavourite).toList();
+    return _items!.where((element) => element.isFavourite).toList();
   }
 
   Future<void> fetchandget() async {
-    const urli =
-        'https://flutter-ca6b2-default-rtdb.firebaseio.com/products.json';
+    final urli =
+        'https://flutter-ca6b2-default-rtdb.firebaseio.com/products.json?auth=$_authToken';
     try {
       final response = await http.get(Uri.parse(urli));
       print(json.decode(response.body));
@@ -91,7 +93,7 @@ class Products with ChangeNotifier {
             'imageURl': value.imageURL,
             'isFavoutite': value.isFavourite
           }));
-      _items.add(newProduct);
+      _items!.add(newProduct);
       notifyListeners();
     } catch (error) {
       throw error;
